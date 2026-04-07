@@ -87,6 +87,19 @@ def progress_bar(pct, width=PROGRESS_BAR_WIDTH):
     filled = round(width * pct / 100)
     return '█' * filled + '░' * (width - filled)
 
+def cost_indicator(cost):
+    if cost < 0.05:
+        return '\U0001f60a'  # 😊
+    if cost < 0.10:
+        return '\U0001f642'  # 🙂
+    if cost < 0.20:
+        return '\U0001f610'  # 😐
+    if cost < 0.50:
+        return '\U0001f62e'  # 😮
+    if cost < 1.00:
+        return '\U0001f92f'  # 🤯
+    return '\U0001f480'      # 💀
+
 def display_width(s):
     """Estimate the terminal display width of a string."""
     w = 0
@@ -120,7 +133,7 @@ cols2 = [
     f"\U0001f4ac \u2193{fmt(total_input_tokens)} \u2191{fmt(total_output_tokens)}"
     f" (\u2193{fmt(cur_input)} \u2191{fmt(cur_output)})",
     f"\u26a1 \u2193{fmt(cur_cache_create)} \u2191{fmt(cur_cache_read)}",
-    f"\U0001f4b0 ${total_cost} (${cur_cost})",
+    f"\U0001f4b0 ${total_cost} (${cur_cost} {cost_indicator(cur_cost)})",
     f"\U0001f554 {total_mins}min (API {api_mins}min)",
 ]
 
