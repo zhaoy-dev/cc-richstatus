@@ -1,11 +1,73 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import json
+_SOURCE_URL = 'https://raw.githubusercontent.com/zhaoy-dev/cc-richstatus/main/statusline.py'
+_VERSION = '2026.04.07'
+
 import sys
-import unicodedata
+import os
 
 sys.stdin.reconfigure(encoding='utf-8')
 sys.stdout.reconfigure(encoding='utf-8')
+
+# ── CLI mode (explicit args or interactive terminal) ────────
+if len(sys.argv) > 1 or sys.stdin.isatty():
+    arg = sys.argv[1] if len(sys.argv) > 1 else None
+
+    if arg == '--update':
+        import urllib.request
+        import urllib.error
+        import tempfile
+        import shutil
+        script_path = os.path.abspath(__file__)
+        try:
+            with urllib.request.urlopen(_SOURCE_URL, timeout=30) as resp:
+                new_code = resp.read()
+            if b'_SOURCE_URL' not in new_code or not new_code.startswith(b'#!'):
+                raise ValueError('Downloaded content does not look like a valid statusline script')
+            with open(script_path, 'rb') as f:
+                old_code = f.read()
+            if new_code == old_code:
+                print('Already up to date.')
+            else:
+                tmp_fd, tmp_path = tempfile.mkstemp(dir=os.path.dirname(script_path))
+                try:
+                    with os.fdopen(tmp_fd, 'wb') as tf:
+                        tf.write(new_code)
+                    shutil.copy2(script_path, script_path + '.bak')
+                    shutil.move(tmp_path, script_path)
+                except Exception:
+                    if os.path.exists(tmp_path):
+                        os.unlink(tmp_path)
+                    raise
+                import re
+                m = re.search(rb"_VERSION\s*=\s*['\"]([^'\"]+)['\"]", new_code)
+                new_ver = m.group(1).decode() if m else 'unknown'
+                print(f'Updated to {new_ver}. Restart Claude Code to apply.')
+        except urllib.error.HTTPError as e:
+            print(f'Update failed (HTTP {e.code}): {e.reason}')
+        except urllib.error.URLError as e:
+            print(f'Update failed (network): {e.reason}')
+        except OSError as e:
+            print(f'Update failed (file): {e}')
+        except Exception as e:
+            print(f'Update failed: {e}')
+
+    elif arg == '--version':
+        print(f'cc-richstatus {_VERSION}')
+
+    else:
+        print(f'cc-richstatus {_VERSION} - Rich status line for Claude Code')
+        print(f'Source: {_SOURCE_URL}')
+        print()
+        print('Usage:')
+        print(f'  python {os.path.basename(__file__)} --update     Update to the latest version')
+        print(f'  python {os.path.basename(__file__)} --version    Show version')
+        print()
+        print('This script is normally invoked by Claude Code via settings.json.')
+    sys.exit(0)
+
+import json
+import unicodedata
 
 # ── User Configuration ──────────────────────────────────────
 CWD_SEGMENTS = 2            # number of trailing path segments to display

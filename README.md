@@ -17,6 +17,16 @@ Paste this to Claude Code:
 Configure the status line using https://raw.githubusercontent.com/zhaoy-dev/cc-richstatus/main/statusline.py
 ```
 
+## Update
+
+```bash
+python ~/.claude/statusline.py --update                       # macOS / Linux
+python %USERPROFILE%\.claude\statusline.py --update           # Windows (cmd)
+python "$env:USERPROFILE\.claude\statusline.py" --update      # Windows (PowerShell)
+```
+
+Restart Claude Code after updating.
+
 ## What's Displayed
 
 | Icon | Field | Description |
