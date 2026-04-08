@@ -19,10 +19,22 @@ Configure the status line using https://raw.githubusercontent.com/zhaoy-dev/cc-r
 
 ## Update
 
+macOS / Linux:
+
 ```bash
-python ~/.claude/statusline.py --update                       # macOS / Linux
-python %USERPROFILE%\.claude\statusline.py --update           # Windows (cmd)
-python "$env:USERPROFILE\.claude\statusline.py" --update      # Windows (PowerShell)
+python ~/.claude/statusline.py --update
+```
+
+Windows (cmd):
+
+```bash
+python %USERPROFILE%\.claude\statusline.py --update
+```
+
+Windows (PowerShell):
+
+```bash
+python "$env:USERPROFILE\.claude\statusline.py" --update
 ```
 
 Restart Claude Code after updating.
@@ -54,72 +66,6 @@ Current-turn cost is calculated locally using official pricing (updated 2026-03-
 
 - Python 3.8+
 - Claude Code CLI
-
-## Installation
-
-### Manual setup
-
-1. Copy `statusline.py` to your Claude config directory:
-
-```bash
-# macOS / Linux
-cp statusline.py ~/.claude/statusline.py
-
-# Windows
-copy statusline.py %USERPROFILE%\.claude\statusline.py
-```
-
-2. Add the status line config to `~/.claude/settings.json`:
-
-```jsonc
-{
-  "statusLine": {
-    "type": "command",
-    "command": "python ~/.claude/statusline.py"          // macOS / Linux
-    // "command": "python %USERPROFILE%/.claude/statusline.py"  // Windows
-  }
-}
-```
-
-3. Restart Claude Code. The status bar will appear at the top of the terminal.
-
-## Customization
-
-All configurable variables are declared at the top of `statusline.py`:
-
-```python
-# ── User Configuration ──────────────────────────────────────
-CWD_SEGMENTS = 2            # number of trailing path segments to display
-PROGRESS_BAR_WIDTH = 10     # character width of the context progress bar
-COLUMN_GAP = 2              # extra spaces between columns
-
-PRICING = {
-    #           (input,  cache_write,  cache_read,  output)  $/M tokens
-    'opus':   (  5.00,     6.25,        0.50,       25.00),
-    'sonnet': (  3.00,     3.75,        0.30,       15.00),
-    'haiku':  (  1.00,     1.25,        0.10,        5.00),
-}
-```
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `CWD_SEGMENTS` | `2` | How many trailing path segments to show (e.g. `2` → `myproject/src`) |
-| `PROGRESS_BAR_WIDTH` | `10` | Character width of the context usage progress bar |
-| `COLUMN_GAP` | `2` | Extra spaces between columns for visual separation |
-| `PRICING` | Official rates | Per-model token pricing ($/M tokens), update when Anthropic changes pricing |
-
-### Swap or reorder sections
-
-Each line is defined as a list of columns (`cols1` and `cols2`). Rearrange the items to change the display order:
-
-```python
-cols1 = [
-    f"🧠 {model_name}",       # column 1
-    f"📂 {cwd_short}",         # column 2
-    f"📝 +{lines_added}/...",  # column 3
-    f"💾 {fmt(ctx_size)} ...", # column 4 (last, no padding)
-]
-```
 
 ## License
 
